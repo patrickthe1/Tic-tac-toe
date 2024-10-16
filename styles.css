@@ -1,0 +1,58 @@
+/* styles.css */
+
+@font-face {
+    font-family: "Roboto";
+    src: url(../ADMIN-DASHBOARD/Roboto/Roboto-Medium.ttf)
+}
+body {
+    font-family: "Roboto", sans-serif;
+    text-align: center;
+    margin-top: 50px;
+}
+
+#controls {
+    margin-bottom: 20px;
+}
+
+#controls input {
+    padding: 10px;
+    margin: 5px;
+    font-size: 16px;
+}
+
+#controls button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 16px;
+}
+
+#status {
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#gameboard {
+    display: grid;
+    grid-template-columns: repeat(3, 200px);
+    grid-gap: 5px;
+    justify-content: center;
+    
+   
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    background-color: #f2f2f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    cursor: pointer;
+    border: 2px solid #333;
+}
+
+.cell:hover {
+    background-color: #e0e0e0;
+}
