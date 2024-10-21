@@ -29,62 +29,48 @@ const Player = (name,mark) => {
 const Game = (() => {
     let players = [];
     let currentPlayerIndex = 0;
-    let isGameover = false;
+    let isGameOver = false;
 
-    const initializePlayers = (player1,player2) => {
-        players = [Player(player1, "X"),Player(player2,"O")];
-
-            currentPlayerIndex = 0;
-            isGameover =false;
-            Gameboard.resetBoard();
+    // Function to initialize players
+    const initializePlayers = (player1Name, player2Name) => {
+        players = [
+            Player(player1Name, 'X'),
+            Player(player2Name, 'O')
+        ];
+        currentPlayerIndex = 0;
+        isGameOver = false;
+        Gameboard.resetBoard();
     };
 
+    // Function to get the current player
     const getCurrentPlayer = () => players[currentPlayerIndex];
 
+    // Function to switch players
     const switchPlayer = () => {
         currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
+    };
 
-    }
-
+    // Function to play a round
     const playRound = (index) => {
-        if(isGameover) {
-            console.log("Game is over, please restart to play again!");
+        if (isGameOver) {
             return;
         }
 
         const currentPlayer = getCurrentPlayer();
+        const successfulMove = Gameboard.setMark(index, currentPlayer.mark);
 
-        const successfulMove = Gameboard.setMark(index,currentPlayer.mark);
-
-        if(successfulMove){
-            console.log(`${currentPlayer.name} placed ${currentPlayer.mark} at position ${index}`);
-            displayBoard();
-             if(checkWin(currentPlayer.mark)){
-                console.log(`${currentPlayer.name} wins!`);
-                isGameover = true;
-             } else if (checkTie()){
-                console.log("It's a tie!");
-                isGameover = true;
-             } else {
+        if (successfulMove) {
+            if (checkWin(currentPlayer.mark)) {
+                isGameOver = true;
+            } else if (checkTie()) {
+                isGameOver = true;
+            } else {
                 switchPlayer();
-             } 
+            }
         }
-        else {
-            console.log("Invalid Move! Spot already taken");
-        }
-    }
-
-    const displayBoard = () => {
-        const board = Gameboard.getBoard();
-
-        console.log(`
-${board[0]} | ${board[1]} | ${board[2]}
-${board[3]} | ${board[4]} | ${board[5]}
-${board[6]} | ${board[7]} | ${board[8]}
-        `)
     };
 
-
+    // Function to check for a win
     const checkWin = (mark) => {
         const board = Gameboard.getBoard();
         const winConditions = [
@@ -103,28 +89,32 @@ ${board[6]} | ${board[7]} | ${board[8]}
         );
     };
 
-    const checkTie = () =>{
-        return Gameboard.getBoard().every(cell => cell !== "")
-    }
+    // Function to check for a tie
+    const checkTie = () => {
+        return Gameboard.getBoard().every(cell => cell !== "");
+    };
 
+    // Function to reset the game
     const resetGame = () => {
         Gameboard.resetBoard();
-        isGameover = false;
+        isGameOver = false;
         currentPlayerIndex = 0;
-        console.log("Game has been reset");
-        displayBoard();
-    }
+    };
 
+    // Expose public methods
     return {
         initializePlayers,
         playRound,
-        displayBoard,
+        getCurrentPlayer,
+        checkWin,
+        checkTie,
         resetGame,
-        getCurrentPlayer,    // expose this
-        checkTie,            // expose this
-        isGameover,
+        get isGameOver() {
+            return isGameOver;
+        }
     };
 })();
+
 
 const DisplayController = (() => {
     const gameBoardElem = document.querySelector("#gameboard");
@@ -172,7 +162,7 @@ const DisplayController = (() => {
         board.forEach((mark,index) => {
             const cell = document.querySelector(`.cell[data-index="${index}"]`);
             cell.textContent = mark;
-            cell.style.pointerEvents = Game.isGameover ? "none" : "auto";
+            cell.style.pointerEvents = Game.isGameOver ? "none" : "auto";
 
         });
     };
@@ -180,7 +170,7 @@ const DisplayController = (() => {
     // Update the display after a move
     const updateDisplay = () => {
         renderBoard();
-        if (Game.isGameover) {
+        if (Game.isGameOver) {
             if (Game.checkTie()) {
                 updateStatus("It's a tie!");
             } else {
